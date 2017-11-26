@@ -47,6 +47,10 @@ public class NumberOnField {
         return "x" + count + "";
     }
 
+    public int getCountInt(){
+        return  count;
+    }
+
     public void setCount(int count) {
         this.count = count;
     }

@@ -36,6 +36,11 @@ public class GameField implements GameObject {
     private boolean isStop = false;
     private boolean isBack = false;
     private boolean isDrawBall = false;
+
+    public boolean isEnd() {
+        return !isMove && !isSpin && !isStop && !isBack;
+    }
+
     private boolean isEnd = false;
 
     private int realWidth;

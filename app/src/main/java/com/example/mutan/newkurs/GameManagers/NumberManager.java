@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
+import com.example.mutan.newkurs.GameObjects.Player;
 import com.example.mutan.newkurs.MyConstants.Constants;
 import com.example.mutan.newkurs.MyInterfaces.GameManager;
 import com.example.mutan.newkurs.Object.LogNumberOnField;
@@ -25,10 +26,18 @@ public class NumberManager implements GameManager {
     private ArrayList<NumberOnField> arrNumberOnFieldH;
     private ArrayList<NumberOnField> arrNumberOnFieldV;
     private ArrayList<NumberOnField> arrNumberOnFieldCross;
+    private int totalOnField = 0;
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    private int total = 0;
 
     private int selected = -1;
 
     public NumberManager(){
+
         arrNumberOnField = new ArrayList<>();
         arrNumberOnFieldH = new ArrayList<>();
         arrNumberOnFieldV = new ArrayList<>();
@@ -47,6 +56,7 @@ public class NumberManager implements GameManager {
     }
 
     public void revertAction(){
+
         if(NumberOnField.logNumberOnField.size()>=1){
 
             int index = -1;
@@ -55,53 +65,80 @@ public class NumberManager implements GameManager {
             if(arrNumberOnField.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField()) != -1){
                 index = arrNumberOnField.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField());
 
-                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED)
+                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED) {
+                    totalOnField -= arrNumberOnField.get(index).getCountInt();
+
                     arrNumberOnField.remove(index);
+                }
 
                 if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.ADD){
+                    totalOnField -= arrNumberOnField.get(index).getCountInt() - NumberOnField.logNumberOnField.get(last).getCount();
+
                     arrNumberOnField.get(index).setCount(NumberOnField.logNumberOnField.get(last).getCount());
                 }
 
                 NumberOnField.logNumberOnField.remove(last);
+
+                //totalOnField -= last;
             }
             else
             if(NumberOnField.logNumberOnField.size()>=1 && arrNumberOnFieldH.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField()) != -1){
                 index = arrNumberOnFieldH.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField());
 
-                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED)
+                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED){
+                    totalOnField -= arrNumberOnFieldH.get(index).getCountInt();
+
                     arrNumberOnFieldH.remove(index);
+                }
 
                 if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.ADD){
+                    totalOnField -= arrNumberOnFieldH.get(index).getCountInt() - NumberOnField.logNumberOnField.get(last).getCount();
+
                     arrNumberOnFieldH.get(index).setCount(NumberOnField.logNumberOnField.get(last).getCount());
                 }
 
                 NumberOnField.logNumberOnField.remove(last);
+
+                //totalOnField -= last;
             }
             else
             if(NumberOnField.logNumberOnField.size()>=1 && arrNumberOnFieldV.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField()) != -1){
                 index = arrNumberOnFieldV.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField());
 
-                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED)
+                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED) {
+                    totalOnField -= arrNumberOnFieldV.get(index).getCountInt();
+
                     arrNumberOnFieldV.remove(index);
+                }
 
                 if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.ADD){
+                    totalOnField -= arrNumberOnFieldV.get(index).getCountInt() - NumberOnField.logNumberOnField.get(last).getCount();
+
                     arrNumberOnFieldV.get(index).setCount(NumberOnField.logNumberOnField.get(last).getCount());
                 }
 
                 NumberOnField.logNumberOnField.remove(last);
+
+                //totalOnField -= last;
             }
             else
             if(NumberOnField.logNumberOnField.size()>=1 && arrNumberOnFieldCross.indexOf(NumberOnField.logNumberOnField.get(last).getNumberOnField()) != -1){
                 index = arrNumberOnFieldCross.indexOf(NumberOnField.logNumberOnField.get(NumberOnField.logNumberOnField.size() - 1).getNumberOnField());
 
-                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED)
+                if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.CREATED) {
+                    totalOnField -= arrNumberOnFieldCross.get(index).getCountInt();
+
                     arrNumberOnFieldCross.remove(index);
+                }
 
                 if(NumberOnField.logNumberOnField.get(last).getType() == LogNumberOnField.TYPE.ADD){
+                    totalOnField -= arrNumberOnFieldCross.get(index).getCountInt() - NumberOnField.logNumberOnField.get(last).getCount();
                     arrNumberOnFieldCross.get(index).setCount(NumberOnField.logNumberOnField.get(last).getCount());
                 }
 
                 NumberOnField.logNumberOnField.remove(last);
+
+                //totalOnField -= last;
             }
         }
     }
@@ -217,11 +254,12 @@ public class NumberManager implements GameManager {
         arrNumberOnFieldCross.clear();
         arrNumberOnFieldH.clear();
         arrNumberOnFieldV.clear();
+
+        totalOnField = 0;
     }
 
     @Override
     public void update() {
-
     }
 
     @Override
@@ -288,7 +326,7 @@ public class NumberManager implements GameManager {
     }
 
     @Override
-    public void receiveTouch(MotionEvent event) {
+    public void receiveTouch(MotionEvent event){
 
         int key = event.getAction();
 
@@ -308,13 +346,29 @@ public class NumberManager implements GameManager {
                             int ni = 0;
                             while (!findValue && ni < arrNumberOnField.size()) {
                                 if (arrNumberOnField.get(ni).getI() == i && arrNumberOnField.get(ni).getJ() == j) {
-                                    arrNumberOnField.get(ni).add(Constants.CHIP_VALUE[selected]);
+
+                                    if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                        arrNumberOnField.get(ni).add(Constants.CHIP_VALUE[selected]);
+                                        totalOnField += Constants.CHIP_VALUE[selected];
+                                    }
+                                    else if(total - totalOnField > 0){
+                                        arrNumberOnField.get(ni).add(total - totalOnField);
+                                        totalOnField += total - totalOnField;
+                                    }
                                     findValue = true;
                                 }
                                 ni++;
                             }
-                            if (!findValue)
-                                arrNumberOnField.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectNumbers.get(i).get(j).height() / 4, rectNumbers.get(i).get(j).width()));
+                            if (!findValue) {
+                                if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                    arrNumberOnField.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectNumbers.get(i).get(j).height() / 4, rectNumbers.get(i).get(j).width()));
+                                    totalOnField += Constants.CHIP_VALUE[selected];
+                                }
+                                else if(total - totalOnField > 0){
+                                    arrNumberOnField.add(new NumberOnField(i, j, total - totalOnField, rectNumbers.get(i).get(j).height() / 4, rectNumbers.get(i).get(j).width()));
+                                    totalOnField += total - totalOnField;
+                                }
+                            }
                             isFind = true;
                         }
                         j++;
@@ -336,13 +390,32 @@ public class NumberManager implements GameManager {
                                 int ni = 0;
                                 while (!findValue && ni < arrNumberOnFieldH.size()) {
                                     if (arrNumberOnFieldH.get(ni).getI() == i && arrNumberOnFieldH.get(ni).getJ() == j) {
-                                        arrNumberOnFieldH.get(ni).add(Constants.CHIP_VALUE[selected]);
+
+                                        if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                            arrNumberOnFieldH.get(ni).add(Constants.CHIP_VALUE[selected]);
+                                            totalOnField += Constants.CHIP_VALUE[selected];
+                                        }
+                                        else if(total - totalOnField > 0){
+                                            arrNumberOnFieldH.get(ni).add(total - totalOnField);
+                                            totalOnField += total - totalOnField;
+                                        }
+
                                         findValue = true;
                                     }
                                     ni++;
                                 }
-                                if (!findValue)
-                                    arrNumberOnFieldH.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersH.get(i).get(j).width(), rectSideNumbersH.get(i).get(j).height()));
+                                if (!findValue) {
+                                    //arrNumberOnFieldH.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersH.get(i).get(j).width(), rectSideNumbersH.get(i).get(j).height()));
+
+                                    if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                        arrNumberOnFieldH.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersH.get(i).get(j).width(), rectSideNumbersH.get(i).get(j).height()));
+                                        totalOnField += Constants.CHIP_VALUE[selected];
+                                    }
+                                    else if(total - totalOnField > 0){
+                                        arrNumberOnFieldH.add(new NumberOnField(i, j, total - totalOnField, rectSideNumbersH.get(i).get(j).width(), rectSideNumbersH.get(i).get(j).height()));
+                                        totalOnField += total - totalOnField;
+                                    }
+                                }
                                 isFind = true;
                             }
                             j++;
@@ -365,13 +438,32 @@ public class NumberManager implements GameManager {
                             int ni = 0;
                             while (!findValue && ni < arrNumberOnFieldV.size()) {
                                 if (arrNumberOnFieldV.get(ni).getI() == i && arrNumberOnFieldV.get(ni).getJ() == j) {
-                                    arrNumberOnFieldV.get(ni).add(Constants.CHIP_VALUE[selected]);
+
+                                    if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                        arrNumberOnFieldV.get(ni).add(Constants.CHIP_VALUE[selected]);
+                                        totalOnField += Constants.CHIP_VALUE[selected];
+                                    }
+                                    else if(total - totalOnField > 0){
+                                        arrNumberOnFieldV.get(ni).add(total - totalOnField);
+                                        totalOnField += total - totalOnField;
+                                    }
+
                                     findValue = true;
                                 }
                                 ni++;
                             }
-                            if (!findValue)
-                                arrNumberOnFieldV.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersV.get(i).get(j).height(), rectSideNumbersV.get(i).get(j).width()));
+                            if (!findValue) {
+                                //arrNumberOnFieldH.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersH.get(i).get(j).width(), rectSideNumbersH.get(i).get(j).height()));
+
+                                if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                    arrNumberOnFieldV.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersV.get(i).get(j).height(), rectSideNumbersV.get(i).get(j).width()));
+                                    totalOnField += Constants.CHIP_VALUE[selected];
+                                }
+                                else if(total - totalOnField > 0){
+                                    arrNumberOnFieldV.add(new NumberOnField(i, j, total - totalOnField, rectSideNumbersV.get(i).get(j).height(), rectSideNumbersV.get(i).get(j).width()));
+                                    totalOnField += total - totalOnField;
+                                }
+                            }
                             isFind = true;
                         }
                         j++;
@@ -393,13 +485,32 @@ public class NumberManager implements GameManager {
                             int ni = 0;
                             while (!findValue && ni < arrNumberOnFieldCross.size()) {
                                 if (arrNumberOnFieldCross.get(ni).getI() == i && arrNumberOnFieldCross.get(ni).getJ() == j) {
-                                    arrNumberOnFieldCross.get(ni).add(Constants.CHIP_VALUE[selected]);
+
+                                    if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                        arrNumberOnFieldCross.get(ni).add(Constants.CHIP_VALUE[selected]);
+                                        totalOnField += Constants.CHIP_VALUE[selected];
+                                    }
+                                    else if(total - totalOnField > 0){
+                                        arrNumberOnFieldCross.get(ni).add(total - totalOnField);
+                                        totalOnField += total - totalOnField;
+                                    }
+
                                     findValue = true;
                                 }
                                 ni++;
                             }
-                            if (!findValue)
-                                arrNumberOnFieldCross.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectCrossNumbers.get(i).get(j).height(), rectCrossNumbers.get(i).get(j).width()));
+                            if (!findValue) {
+                                //arrNumberOnFieldH.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectSideNumbersH.get(i).get(j).width(), rectSideNumbersH.get(i).get(j).height()));
+
+                                if(totalOnField + Constants.CHIP_VALUE[selected] <= total) {
+                                    arrNumberOnFieldCross.add(new NumberOnField(i, j, Constants.CHIP_VALUE[selected], rectCrossNumbers.get(i).get(j).height(), rectCrossNumbers.get(i).get(j).width()));
+                                    totalOnField += Constants.CHIP_VALUE[selected];
+                                }
+                                else if(total - totalOnField > 0){
+                                    arrNumberOnFieldCross.add(new NumberOnField(i, j, total - totalOnField, rectCrossNumbers.get(i).get(j).height(), rectCrossNumbers.get(i).get(j).width()));
+                                    totalOnField += total - totalOnField;
+                                }
+                            }
                             isFind = true;
                         }
                         j++;
