@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.v4.content.res.TypedArrayUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -15,7 +14,6 @@ import com.example.mutan.newkurs.MyConstants.Constants;
 import com.example.mutan.newkurs.MyInterfaces.GameObject;
 import com.example.mutan.newkurs.R;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class GameField implements GameObject {
@@ -30,6 +28,8 @@ public class GameField implements GameObject {
 
     private Rect rectNumbers;
     private String number;
+
+    private boolean isEndOfEnd = false;
 
     private boolean isMove = false;
     private boolean isSpin = false;
@@ -378,11 +378,24 @@ public class GameField implements GameObject {
         return false;
     }
 
+    public String getNum(){
+        if(isEndOfEnd) {
+            isEndOfEnd = false;
+
+            //Log.i("forcheck", "im here " + number);
+
+            return number;
+        }
+        else
+            return "";
+
+    }
+
     private void searchNumber(){
 
 //        number = "" + Constants.ROULETTE_VALUE[rouletteNumber];
 
-        number = "UPS";
+        number = "";
         int numd = (int) Math.abs(Math.round(degrees / (360.0 / 37.0)));
         int numdb = (int) Math.abs(Math.round(degreesBall / (360.0 / 37.0)));
 
@@ -433,6 +446,8 @@ public class GameField implements GameObject {
 
             isBack = !this.updateBackMove();
             isEnd = !isBack;
+
+            isEndOfEnd = true;
         }
 
         if(isEnd){

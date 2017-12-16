@@ -29,7 +29,6 @@ public class FieldManager implements GameManager{
 
     Player player;
 
-
     public FieldManager(Resources resources){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
@@ -44,11 +43,12 @@ public class FieldManager implements GameManager{
         chipManager = new ChipManager(chip);
     }
 
-
     @Override
     public void update() {
         numberManager.setSelected(chipManager.selectedChip());
         numberManager.setTotal(player.getCount());
+
+        player.addCount(numberManager.getAdd(gameField.getNum()));
 
         gameField.update();
         chipManager.update();

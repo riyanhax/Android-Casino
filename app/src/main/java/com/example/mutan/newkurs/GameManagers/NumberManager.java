@@ -3,6 +3,7 @@ package com.example.mutan.newkurs.GameManagers;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.mutan.newkurs.GameObjects.Player;
@@ -27,6 +28,8 @@ public class NumberManager implements GameManager {
     private ArrayList<NumberOnField> arrNumberOnFieldV;
     private ArrayList<NumberOnField> arrNumberOnFieldCross;
     private int totalOnField = 0;
+
+    private boolean flag = false;
 
     public void setTotal(int total) {
         this.total = total;
@@ -256,6 +259,72 @@ public class NumberManager implements GameManager {
         arrNumberOnFieldV.clear();
 
         totalOnField = 0;
+    }
+
+    private int sum(){
+        int sum = 0;
+
+        for(int i = 0; i < arrNumberOnField.size(); i++){
+            sum += arrNumberOnField.get(i).getCountInt();
+        }
+        for(int i = 0; i < arrNumberOnFieldH.size(); i++){
+            sum += arrNumberOnFieldH.get(i).getCountInt();
+        }
+        for(int i = 0; i < arrNumberOnFieldV.size(); i++){
+            sum += arrNumberOnFieldV.get(i).getCountInt();
+        }
+        for(int i = 0; i < arrNumberOnFieldCross.size(); i++){
+            sum += arrNumberOnFieldCross.get(i).getCountInt();
+        }
+
+        return sum;
+    }
+
+    public ArrayList<Integer> getAdd(String num){
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        int count  = 0;
+
+        if(num  != ""){
+
+            int number = Integer.parseInt(num);
+
+            for(int i = 0; i < arrNumberOnField.size(); i++){
+                if(Constants.ROULETTE_FIELD[arrNumberOnField.get(i).getJ() + 12 * arrNumberOnField.get(i).getI()] == number){
+                    count = count + arrNumberOnField.get(i).getCountInt() * 35 + arrNumberOnField.get(i).getCountInt();
+                }
+            }
+
+            for(int i = 0; i < arrNumberOnFieldH.size(); i++){
+                if(Constants.ROULETTE_FIELD[arrNumberOnFieldH.get(i).getJ() + 1 + 12 * (arrNumberOnFieldH.get(i).getI())] == number
+                        || Constants.ROULETTE_FIELD[arrNumberOnFieldH.get(i).getJ() + 12 * (arrNumberOnFieldH.get(i).getI())] == number){
+                    count = count + arrNumberOnFieldH.get(i).getCountInt() * 17 + arrNumberOnFieldH.get(i).getCountInt();
+                }
+            }
+
+            for(int i = 0; i < arrNumberOnFieldV.size(); i++){
+                if(Constants.ROULETTE_FIELD[arrNumberOnFieldV.get(i).getJ() + 12 * arrNumberOnFieldV.get(i).getI()] == number
+                        || Constants.ROULETTE_FIELD[arrNumberOnFieldV.get(i).getJ() + 12 * (arrNumberOnFieldV.get(i).getI() + 1)] == number){
+                    count = count + arrNumberOnFieldV.get(i).getCountInt() * 17 + arrNumberOnFieldV.get(i).getCountInt();
+                }
+            }
+
+            for(int i = 0; i < arrNumberOnFieldCross.size(); i++){
+                if(Constants.ROULETTE_FIELD[arrNumberOnFieldCross.get(i).getJ() + 12 * arrNumberOnFieldCross.get(i).getI()] == number
+                        || Constants.ROULETTE_FIELD[arrNumberOnFieldCross.get(i).getJ() + 1 + 12 * arrNumberOnFieldCross.get(i).getI()] == number
+                        || Constants.ROULETTE_FIELD[arrNumberOnFieldCross.get(i).getJ() + 12 * (arrNumberOnFieldCross.get(i).getI() + 1)] == number
+                        || Constants.ROULETTE_FIELD[arrNumberOnFieldCross.get(i).getJ() + 1 + 12 * (arrNumberOnFieldCross.get(i).getI() + 1)] == number){
+                    count = count + arrNumberOnFieldCross.get(i).getCountInt() * 8 + arrNumberOnFieldCross.get(i).getCountInt();
+                }
+            }
+
+
+            arrayList.add(count);
+            arrayList.add(this.sum());
+
+            this.clear();
+        }
+
+        return arrayList;
     }
 
     @Override
