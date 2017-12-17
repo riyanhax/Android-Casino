@@ -24,10 +24,11 @@ public class Player implements GameObject{
     private boolean whenStart1 = false;
     private volatile boolean stopAdd = true;
 
-
     private int tempCount = 0;
 
     private long time = 0;
+
+    private Bonus bonus;
 
     public int getCount() {
         return count;
@@ -48,6 +49,8 @@ public class Player implements GameObject{
     }
 
     public Player(){
+        bonus = new Bonus();
+
         rectDst = new Rect(
                 (int)((Constants.SCREEN_WIDTH - Constants.SCREEN_WIDTH * Constants.MIDDLE_RIGHT_HORIZONTAL) * 0.5),
                 0,
@@ -60,11 +63,13 @@ public class Player implements GameObject{
 
     @Override
     public void update() {
+        count += bonus.getBonus();
+
         paint.setTextScaleX(1);
         paint.setTextSize(rectDst.height());
 
         if (System.currentTimeMillis() - time < 3000) {
-            paint.setTextScaleX(rectDst.width() / paint.measureText("chips: " + tempCount + " - " + minus));
+            paint.setTextScaleX(rectDst.width() / paint.measureText("CHIPS: " + tempCount + " - " + minus));
         }
         if(System.currentTimeMillis() - time < 6000 && System.currentTimeMillis() - time >= 3000){
 
@@ -73,31 +78,35 @@ public class Player implements GameObject{
                 whenStart1 = true;
             }
 
-            paint.setTextScaleX(rectDst.width() / paint.measureText("chips: " + tempCount + " + " + plus));
+            paint.setTextScaleX(rectDst.width() / paint.measureText("CHIPS: " + tempCount + " + " + plus));
 
             stopAdd = true;
         }
         else if(stopAdd){
             whenStart1 = false;
-            paint.setTextScaleX(rectDst.width() / paint.measureText("chips: " + count));
+            paint.setTextScaleX(rectDst.width() / paint.measureText("CHIPS: " + count));
         }
+
+        bonus.update();
     }
 
     @Override
     public void draw(Canvas canvas) {
         if (System.currentTimeMillis() - time < 3000) {
-            canvas.drawText("chips: " + tempCount + " - " + minus, rectDst.left, rectDst.bottom, paint);
+            canvas.drawText("CHIPS: " + tempCount + " - " + minus, rectDst.left, rectDst.bottom, paint);
         }
         if(System.currentTimeMillis() - time < 6000 && System.currentTimeMillis() - time >= 3000){
-            canvas.drawText("chips: " + tempCount + " + " + plus, rectDst.left, rectDst.bottom, paint);
+            canvas.drawText("CHIPS: " + tempCount + " + " + plus, rectDst.left, rectDst.bottom, paint);
         }
         else if(stopAdd){
-            canvas.drawText("chips: " + count, rectDst.left, rectDst.bottom, paint);
+            canvas.drawText("CHIPS: " + count, rectDst.left, rectDst.bottom, paint);
         }
+
+        bonus.draw(canvas);
     }
 
     @Override
     public void receiveTouch(MotionEvent event) {
-
+        bonus.receiveTouch(event);
     }
 }

@@ -49,19 +49,11 @@ public class GameField implements GameObject {
     private int centerX;
     private int centerY;
 
-//    private int rouletteNumber = 0;
-//    private int roulettePreviousNumber = 0;
-
     private double rotateSpeedBall = 0;
     private double rotateSpeedField = 0;
 
     private double degrees = 360.0 / 37.0;
     private double degreesBall = - 360.0 + 360.0 / 37.0 ;
-
-//    private double degreesTo;
-//    private double degreesBallTo;
-//    private double deltaDegreesBall = 0;
-//    private double deltaDegrees = 0;
 
     private float ballX;
     private float ballY;
