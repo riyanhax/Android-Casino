@@ -50,18 +50,11 @@ public class Bonus implements GameObject{
             }
 
             public void onFinish() {
-                text = ("YOU GET IT! | ");
-
+                //text = ("YOU GET IT! | ");
                 millis *= 2;
                 bonus += bonus * 0.5;
-
                 when = true;
 
-                try {
-                    wait(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 startTimer();
             }
         }.start();

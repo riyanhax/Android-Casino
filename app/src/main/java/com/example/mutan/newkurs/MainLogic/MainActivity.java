@@ -22,4 +22,5 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(new GamePanel(this));
     }
+
 }

@@ -10,7 +10,7 @@ import com.example.mutan.newkurs.MyInterfaces.Scene;
 import java.util.ArrayList;
 
 public class ManagerScene {
-    private ArrayList<Scene> scenes = new ArrayList<>();
+    private ArrayList<GameScene> scenes = new ArrayList<GameScene>();
 
     public static int ACTIVE_SCENE;
     private Resources resources;
